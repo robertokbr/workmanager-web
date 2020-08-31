@@ -2,12 +2,6 @@ import styled, { keyframes } from 'styled-components';
 import { shade } from 'polished';
 import SignInBackground from '../../assets/background.jpg';
 
-export const Container = styled.div`
-  height: 100vh;
-  display: flex;
-  align-items: stretch;
-`;
-
 const appearFromLeft = keyframes`
 from{
 opacity: 0;
@@ -21,13 +15,18 @@ transform: translatex(0);
 }
 `;
 
+export const Container = styled.div`
+  height: 100vh;
+  display: flex;
+  align-items: stretch;
+  animation: ${appearFromLeft} 1s;
+`;
 export const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   place-content: center;
   align-items: center;
 
-  animation: ${appearFromLeft} 1s;
   form {
     margin: 80px 0;
     width: 340px;
@@ -74,6 +73,11 @@ export const Content = styled.div`
   max-width: 700px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  > img {
+    width: 200px;
+  }
 `;
 
 export const Background = styled.div`

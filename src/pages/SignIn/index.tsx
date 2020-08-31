@@ -8,6 +8,7 @@ import { Container, Background, Content, FormContainer } from './styles';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import { useAuth } from '../../hooks/auth';
+import logoImg from '../../assets/logo.svg';
 
 interface SignFormData {
   name: string;
@@ -35,6 +36,7 @@ const SignIn: React.FC = () => {
   return (
     <Container>
       <Content>
+        <img src={logoImg} alt="RJ" />
         <FormContainer>
           <Form ref={formRef} onSubmit={handleSubmit}>
             <h1>Faça seu LogIn</h1>
