@@ -136,7 +136,7 @@ const FloatForm: React.FC<Props> = ({ children, returnTask, taskFunction }) => {
             <Form ref={formRef} onSubmit={handleUpdate}>
               <Input name="date" type="Date" />
               <Input name="time" type="Time" />
-              <Input name="reason" />
+              <Input name="reason" placeholder="Motivo (Obrigatório)" />
               <Button type="submit">Confirmar</Button>
             </Form>
             {children}
