@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiArrowLeft, FiArchive } from 'react-icons/fi';
+import { FiArrowLeft } from 'react-icons/fi';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import api from '../../services/api';
