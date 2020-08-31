@@ -6,8 +6,8 @@ import {
   FiXCircle,
   FiCheckCircle,
   FiArrowLeft,
-  FiArchive,
 } from 'react-icons/fi';
+import { IoMdArchive } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import Header from '../../components/Header';
@@ -21,6 +21,7 @@ import { useAuth } from '../../hooks/auth';
 import FloatForm from '../../components/FloatForm';
 import sortResponse from '../../utils/sortResponse';
 import getFormatedData from '../../utils/getFormatedData';
+import Loading from '../../components/Loading';
 
 interface TaskOperation {
   task?: TaskContent;
@@ -38,7 +39,7 @@ interface TaskContent {
 }
 
 const Dashboard: React.FC = () => {
-  const [allTask, setAllTask] = useState<TaskContent[]>([]);
+  const [allTask, setAllTask] = useState<TaskContent[] | void>();
   const [taskFunction, setTaskFunction] = useState<TaskOperation | void>();
   const { user, token, signOut } = useAuth();
 
@@ -57,8 +58,9 @@ const Dashboard: React.FC = () => {
 
   const handleAddTask = useCallback(
     (value: TaskContent) => {
+      if (!allTask) return;
       if (taskFunction && taskFunction.operation === 'addTask') {
-        setAllTask(state => [...state, value]);
+        setAllTask([...allTask, value]);
         setTaskFunction();
         return;
       }
@@ -68,6 +70,10 @@ const Dashboard: React.FC = () => {
     },
     [taskFunction, allTask],
   );
+
+  if (!allTask) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -155,10 +161,10 @@ const Dashboard: React.FC = () => {
                   <td className={task.status}>{task.status}</td>
 
                   <td id="last">
-                    {task.status === 'Andamento' && (
-                      <>
+                    {task.status === 'Andamento' ? (
+                      <div>
                         <button
-                          className="cancel"
+                          className="Cancelada"
                           type="button"
                           onClick={() => {
                             setTaskFunction({ task, operation: 'cancelTask' });
@@ -168,7 +174,7 @@ const Dashboard: React.FC = () => {
                         </button>
 
                         <button
-                          className="finish"
+                          className="Finalizada"
                           type="button"
                           onClick={() => {
                             setTaskFunction({ task, operation: 'finishTask' });
@@ -176,16 +182,18 @@ const Dashboard: React.FC = () => {
                         >
                           <FiCheckCircle size={25} />
                         </button>
-                      </>
+                      </div>
+                    ) : (
+                      <button
+                        className={task.status}
+                        type="button"
+                        onClick={() => {
+                          setTaskFunction({ task, operation: 'detailTask' });
+                        }}
+                      >
+                        <IoMdArchive size={25} />
+                      </button>
                     )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTaskFunction({ task, operation: 'detailTask' });
-                      }}
-                    >
-                      <FiArchive size={25} />
-                    </button>
                   </td>
                 </tr>
               ))}

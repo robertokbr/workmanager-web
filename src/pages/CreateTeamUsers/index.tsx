@@ -8,6 +8,7 @@ import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
 import Header from '../../components/Header';
 import Button from '../../components/Button';
+import Loading from '../../components/Loading';
 
 interface UserData {
   id: string;
@@ -20,7 +21,7 @@ interface Response {
 }
 
 const CreateTeamUsers: React.FC = () => {
-  const [users, setusers] = useState<UserData[]>([]);
+  const [users, setusers] = useState<UserData[] | void>();
   const [selectedUsers, setSelectedusers] = useState<string[]>([]);
   const { user, token, usersInTheTeam } = useAuth();
   const history = useHistory();
@@ -77,6 +78,10 @@ const CreateTeamUsers: React.FC = () => {
       alert('Tente novamente');
     }
   }, [token, user.id, history, selectedUsers]);
+
+  if (!users) {
+    return <Loading />;
+  }
 
   return (
     <>

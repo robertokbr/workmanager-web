@@ -14,6 +14,7 @@ import { useAuth } from '../../hooks/auth';
 import FloatForm from '../../components/FloatForm';
 import sortResponse from '../../utils/sortResponse';
 import getFormatedData from '../../utils/getFormatedData';
+import Loading from '../../components/Loading';
 
 interface RouteParams {
   id: string;
@@ -34,7 +35,7 @@ interface TaskContent {
   cancellationReason: string;
 }
 const TeamUserTask: React.FC = () => {
-  const [allTask, setAllTask] = useState<TaskContent[]>([]);
+  const [allTask, setAllTask] = useState<TaskContent[] | void>();
   const [taskFunction, setTaskFunction] = useState<TaskOperation | void>();
   const { user, token } = useAuth();
 
@@ -52,6 +53,10 @@ const TeamUserTask: React.FC = () => {
         setAllTask(tasks);
       });
   }, [user.id, token, params.id, params]);
+
+  if (!allTask) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -77,7 +82,7 @@ const TeamUserTask: React.FC = () => {
 
       <Container>
         <ButtonContainer>
-          <ButtonDashboard>
+          <ButtonDashboard className="Finalizada">
             <h1>
               Finalizadas:
               <span>
@@ -85,7 +90,7 @@ const TeamUserTask: React.FC = () => {
               </span>
             </h1>
           </ButtonDashboard>
-          <ButtonDashboard>
+          <ButtonDashboard className="Cancelada">
             <h1>
               Canceladas:
               <span>
@@ -111,7 +116,6 @@ const TeamUserTask: React.FC = () => {
                 <th>Ínicio</th>
                 <th>Término</th>
                 <th>Status</th>
-                <th>Detalhes</th>
               </tr>
             </thead>
 
@@ -126,17 +130,8 @@ const TeamUserTask: React.FC = () => {
                   <td className="first">{task.name}</td>
                   <td>{getFormatedData(task.started_at)}</td>
                   <td>{getFormatedData(task.finished_at)}</td>
-                  <td className={task.status}>{task.status}</td>
-                  <td id="last">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTaskFunction({ task, operation: 'detailTask' });
-                      }}
-                    >
-                      <br />
-                      <FiArchive size={25} />
-                    </button>
+                  <td id="last" className={task.status}>
+                    {task.status}
                   </td>
                 </tr>
               ))}

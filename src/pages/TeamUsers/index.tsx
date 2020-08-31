@@ -6,6 +6,7 @@ import { Container, Title, Users } from './styles';
 import userAvatar from '../../assets/avatar.jpg';
 import { useAuth } from '../../hooks/auth';
 import Header from '../../components/Header';
+import Loading from '../../components/Loading';
 
 interface UserData {
   id: string;
@@ -14,7 +15,7 @@ interface UserData {
 }
 
 const TeamUsers: React.FC = () => {
-  const [users, setusers] = useState<UserData[]>([]);
+  const [users, setusers] = useState<UserData[] | void>();
   const { usersInTheTeam } = useAuth();
   useEffect(() => {
     (async () => {
@@ -22,6 +23,10 @@ const TeamUsers: React.FC = () => {
       setusers(myTeamUsers);
     })();
   }, [usersInTheTeam]);
+
+  if (!users) {
+    return <Loading />;
+  }
 
   return (
     <>

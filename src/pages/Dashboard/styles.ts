@@ -34,10 +34,7 @@ export const ButtonDashboard = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  span {
-    color: #12a454;
-    margin-left: 8px;
-  }
+
   h1 {
     font-size: 32px;
     margin-right: 10px;
@@ -52,7 +49,11 @@ export const ButtonDashboard = styled.div`
     background: none;
     outline: 0;
     border: none;
+    transition: 0.2s;
 
+    &:hover {
+      color: #5541a2;
+    }
     @media (max-width: 967px) {
       flex-direction: column;
     }
@@ -74,10 +75,12 @@ export const TableContainer = styled.section<FormProps>`
       font-size: 16px;
       line-height: 24px;
     }
+
     tbody {
       tr {
         cursor: pointer;
       }
+
       td {
         padding: 20px 32px;
         border: 0;
@@ -93,19 +96,19 @@ export const TableContainer = styled.section<FormProps>`
           color: #e83f5b;
         }
 
+        div {
+          display: flex;
+        }
+
         button {
           color: #fff;
-          transition: 0.2s;
           background: inherit;
           border: none;
 
-          &:hover {
-            opacity: 0.5;
-          }
-          &.finish {
+          &.Finalizada {
             color: #12a454;
           }
-          &.cancel {
+          &.Cancelada {
             color: #e83f5b;
           }
           & + button {

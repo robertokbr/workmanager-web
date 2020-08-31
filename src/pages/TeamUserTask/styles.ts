@@ -30,27 +30,18 @@ export const ButtonDashboard = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  &.Finalizada {
+    color: #12a454;
+  }
+  &.Cancelada {
+    color: #e83f5b;
+  }
   span {
     margin-left: 8px;
   }
   h1 {
     font-size: 32px;
     margin-right: 10px;
-  }
-  a,
-  button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    text-decoration: none;
-    background: none;
-    outline: 0;
-    border: none;
-
-    @media (max-width: 967px) {
-      flex-direction: column;
-    }
   }
 `;
 
