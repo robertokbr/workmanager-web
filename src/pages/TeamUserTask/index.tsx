@@ -61,7 +61,7 @@ const TeamUserTask: React.FC = () => {
   return (
     <>
       <Header>
-        <Link to="/dashboard">
+        <Link to="/teamUsers">
           <FiArrowLeft />
           Voltar
         </Link>
