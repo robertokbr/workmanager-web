@@ -1,89 +1,34 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  FiUserPlus,
-  FiUsers,
-  FiCalendar,
-  FiXCircle,
-  FiCheckCircle,
-  FiArrowLeft,
-} from 'react-icons/fi';
+import React, { useState } from 'react';
 import { IoMdArchive } from 'react-icons/io';
 import { Link } from 'react-router-dom';
-import api from '../../services/api';
-import Header from '../../components/Header';
-import {
-  Container,
-  ButtonContainer,
-  ButtonDashboard,
-  TableContainer,
-} from './styles';
+import * as Icons from 'react-icons/fi';
+
+import * as S from './styles';
 import { useAuth } from '../../hooks/auth';
+import Header from '../../components/Header';
 import FloatForm from '../../components/FloatForm';
-import sortResponse from '../../utils/sortResponse';
 import getFormatedData from '../../utils/getFormatedData';
 import Loading from '../../components/Loading';
+import { useData } from '../../hooks/useData';
 
 interface TaskOperation {
   task?: TaskContent;
-  operation: 'addTask' | 'detailTask' | 'cancelTask' | 'finishTask';
-}
-
-interface TaskContent {
-  id: string;
-  name: string;
-  status: 'Cancelada' | 'Andamento' | 'Finalizada';
-  userId: string;
-  started_at: Date;
-  finished_at: Date;
-  cancellationReason: string;
+  operation: TaskOperations;
 }
 
 const Dashboard: React.FC = () => {
-  const [allTask, setAllTask] = useState<TaskContent[] | void>();
   const [taskFunction, setTaskFunction] = useState<TaskOperation | void>();
-  const { user, token, signOut } = useAuth();
+  const { signOut, user } = useAuth();
+  const { userTasks } = useData();
 
-  useEffect(() => {
-    api
-      .get(`/task/${user.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(response => {
-        const tasks = sortResponse(response.data);
-        setAllTask(tasks);
-      });
-  }, [user.id, token]);
-
-  const handleAddTask = useCallback(
-    (value: TaskContent) => {
-      if (!allTask) return;
-      if (taskFunction && taskFunction.operation === 'addTask') {
-        setAllTask([...allTask, value]);
-        setTaskFunction();
-        return;
-      }
-      const filteredTasks = allTask.filter(task => task.id !== value.id);
-      setAllTask([...filteredTasks, value]);
-      setTaskFunction();
-    },
-    [taskFunction, allTask],
-  );
-
-  if (!allTask) {
+  if (!userTasks) {
     return <Loading />;
   }
 
   return (
     <>
       {taskFunction && (
-        <FloatForm
-          taskFunction={taskFunction}
-          returnTask={value => {
-            handleAddTask(value);
-          }}
-        >
+        <FloatForm taskFunction={taskFunction} onEnd={() => setTaskFunction()}>
           <button
             className="cancel"
             onClick={() => {
@@ -95,39 +40,38 @@ const Dashboard: React.FC = () => {
           </button>
         </FloatForm>
       )}
-
       <Header>
         <button type="button" onClick={signOut}>
-          <FiArrowLeft />
+          <Icons.FiArrowLeft />
           Logout
         </button>
       </Header>
-      <Container>
-        <ButtonContainer isManager={Number(user.isManager)}>
-          <ButtonDashboard>
+      <S.Container>
+        <S.ButtonContainer isManager={Number(user.isManager)}>
+          <S.ButtonDashboard>
             {user.isManager ? (
               <Link to="/createTeam">
                 <h1 data-testid="balance-income">Adicionar</h1>
-                <FiUserPlus size={30} />
+                <Icons.FiUserPlus size={30} />
               </Link>
             ) : (
               <h1>
                 Andamento:
                 <span>
-                  {allTask.filter(task => task.status === 'Andamento').length}
+                  {userTasks.filter(task => task.status === 'Andamento').length}
                 </span>
               </h1>
             )}
-          </ButtonDashboard>
+          </S.ButtonDashboard>
           {user.isManager && (
-            <ButtonDashboard>
+            <S.ButtonDashboard>
               <Link to="/teamUsers">
                 <h1 data-testid="balance-outcome">Visualizar time</h1>
-                <FiUsers size={30} />
+                <Icons.FiUsers size={30} />
               </Link>
-            </ButtonDashboard>
+            </S.ButtonDashboard>
           )}
-          <ButtonDashboard>
+          <S.ButtonDashboard>
             <button
               type="button"
               onClick={() => {
@@ -135,12 +79,11 @@ const Dashboard: React.FC = () => {
               }}
             >
               <h1 data-testid="balance-total">Criar tarefa</h1>
-              <FiCalendar size={30} />
+              <Icons.FiCalendar size={30} />
             </button>
-          </ButtonDashboard>
-        </ButtonContainer>
-
-        <TableContainer formIsVisible={Number(!!taskFunction)}>
+          </S.ButtonDashboard>
+        </S.ButtonContainer>
+        <S.TableContainer formIsVisible={Number(!!taskFunction)}>
           <table>
             <thead>
               <tr>
@@ -151,15 +94,13 @@ const Dashboard: React.FC = () => {
                 <th>Ações</th>
               </tr>
             </thead>
-
             <tbody>
-              {allTask.map(task => (
+              {userTasks.map(task => (
                 <tr key={task.id}>
                   <td className="first">{task.name}</td>
                   <td>{getFormatedData(task.started_at)}</td>
                   <td>{getFormatedData(task.finished_at)}</td>
                   <td className={task.status}>{task.status}</td>
-
                   <td id="last">
                     {task.status === 'Andamento' ? (
                       <div>
@@ -170,7 +111,7 @@ const Dashboard: React.FC = () => {
                             setTaskFunction({ task, operation: 'cancelTask' });
                           }}
                         >
-                          <FiXCircle size={25} />
+                          <Icons.FiXCircle size={25} />
                         </button>
 
                         <button
@@ -180,7 +121,7 @@ const Dashboard: React.FC = () => {
                             setTaskFunction({ task, operation: 'finishTask' });
                           }}
                         >
-                          <FiCheckCircle size={25} />
+                          <Icons.FiCheckCircle size={25} />
                         </button>
                       </div>
                     ) : (
@@ -199,8 +140,8 @@ const Dashboard: React.FC = () => {
               ))}
             </tbody>
           </table>
-        </TableContainer>
-      </Container>
+        </S.TableContainer>
+      </S.Container>
     </>
   );
 };
