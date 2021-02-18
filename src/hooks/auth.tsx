@@ -6,9 +6,6 @@ interface User {
   name: string;
   isManager: boolean;
 }
-interface Response {
-  members: User[];
-}
 
 interface AuthState {
   token: string;
@@ -23,9 +20,8 @@ interface SignInCredentials {
 interface AuthContextData {
   user: User;
   token: string;
-  signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
-  usersInTheTeam(): Promise<User[]>;
+  signIn(credentials: SignInCredentials): Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextData>(
@@ -34,8 +30,8 @@ export const AuthContext = createContext<AuthContextData>(
 
 export const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>(() => {
-    const token = localStorage.getItem('@Intranett:token');
-    const user = localStorage.getItem('@Intranett:user');
+    const token = localStorage.getItem('@WM:token');
+    const user = localStorage.getItem('@WM:user');
 
     if (token && user) {
       return { token, user: JSON.parse(user) };
@@ -51,33 +47,22 @@ export const AuthProvider: React.FC = ({ children }) => {
 
     const { token, user } = response.data as AuthState;
 
-    localStorage.setItem('@Intranett:token', token);
-    localStorage.setItem('@Intranett:user', JSON.stringify(user));
+    localStorage.setItem('@WM:token', token);
+    localStorage.setItem('@WM:user', JSON.stringify(user));
     setData({ user, token });
   }, []);
 
-  const signOut = useCallback(async () => {
-    localStorage.removeItem('@Intranett:token');
-    localStorage.removeItem('@Intranett:user');
+  const signOut = useCallback(() => {
+    localStorage.removeItem('@WM:token');
+    localStorage.removeItem('@WM:user');
     setData({} as AuthState);
   }, []);
-
-  const usersInTheTeam = useCallback(async () => {
-    const response = await api.get<Response>(`/team/${data.user.id}`, {
-      headers: {
-        Authorization: `Bearer ${data.token}`,
-      },
-    });
-    const users = response.data.members;
-    return users;
-  }, [data.token, data.user]);
 
   return (
     <AuthContext.Provider
       value={{
         user: data.user,
         signOut,
-        usersInTheTeam,
         signIn,
         token: data.token,
       }}
