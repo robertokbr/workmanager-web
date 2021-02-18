@@ -63,6 +63,11 @@ export const TableContainer = styled.section<FormProps>`
     tbody {
       tr {
         cursor: pointer;
+
+        &:hover {
+          transform: scale(1.01);
+          transition: 0.2s ease-in-out;
+        }
       }
       td {
         padding: 20px 32px;

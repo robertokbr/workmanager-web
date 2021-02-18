@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Link, useRouteMatch } from 'react-router-dom';
+import useSWR from 'swr';
 
 import api from '../../services/api';
 import Header from '../../components/Header';
@@ -12,7 +13,6 @@ import {
 } from './styles';
 import { useAuth } from '../../hooks/auth';
 import FloatForm from '../../components/FloatForm';
-import sortResponse from '../../utils/sortResponse';
 import getFormatedData from '../../utils/getFormatedData';
 import Loading from '../../components/Loading';
 
@@ -22,13 +22,13 @@ interface RouteParams {
 
 interface TaskOperation {
   task?: TaskContent;
-  operation: 'addTask' | 'detailTask' | 'cancelTask' | 'finishTask';
+  operation: TaskOperations;
 }
 
 interface TaskContent {
   id: string;
   name: string;
-  status: 'Cancelada' | 'Andamento' | 'Finalizada';
+  status: TaskStatus;
   userId: string;
   started_at: Date;
   finished_at: Date;
@@ -37,22 +37,19 @@ interface TaskContent {
 const TeamUserTask: React.FC = () => {
   const [allTask, setAllTask] = useState<TaskContent[] | void>();
   const [taskFunction, setTaskFunction] = useState<TaskOperation | void>();
-  const { user, token } = useAuth();
+  const { token } = useAuth();
 
   const { params } = useRouteMatch<RouteParams>();
 
-  useEffect(() => {
+  useSWR(`/task/${params.id}`, (url: string) =>
     api
-      .get(`/task/${params.id}`, {
+      .get<TaskContent[]>(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then(response => {
-        const tasks = sortResponse(response.data);
-        setAllTask(tasks);
-      });
-  }, [user.id, token, params.id, params]);
+      .then(resp => setAllTask(resp.data)),
+  );
 
   if (!allTask) {
     return <Loading />;
@@ -67,7 +64,7 @@ const TeamUserTask: React.FC = () => {
         </Link>
       </Header>
       {taskFunction && (
-        <FloatForm returnTask={() => {}} taskFunction={taskFunction}>
+        <FloatForm onEnd={() => {}} taskFunction={taskFunction}>
           <button
             className="cancel"
             onClick={() => {
