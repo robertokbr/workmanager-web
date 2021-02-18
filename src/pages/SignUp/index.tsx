@@ -33,10 +33,9 @@ const SignUp: React.FC = () => {
 
         history.push('/');
       } catch (err) {
-        alert(err);
+        alert('O nome de Usuario ja esta em uso ');
       }
     },
-
     [history],
   );
 
