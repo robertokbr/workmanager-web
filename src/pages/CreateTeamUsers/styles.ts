@@ -27,9 +27,10 @@ export const Users = styled.div`
     display: flex;
     align-items: center;
     transition: transform 0.2s;
-    border: none;
+    border: 2px solid transparent;
+
     &:hover {
-      transform: scale(1.05);
+      transform: scale(1.02);
     }
 
     & + button {
@@ -41,26 +42,34 @@ export const Users = styled.div`
       height: 64px;
       border-radius: 50%;
     }
-    div {
+
+    > div {
       flex: 1;
       margin: 0 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
 
       strong {
         font-size: 20px;
         color: #fff;
       }
+
       p {
         font-size: 18px;
         color: #fff;
         margin-top: 4px;
       }
     }
+
     svg {
       margin-left: auto;
       color: #fff;
     }
+
     &.selected {
-      border: 1px solid #12a454;
+      border-color: #12a454;
     }
 
     &.submit {
