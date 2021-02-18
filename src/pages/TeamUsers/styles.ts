@@ -1,3 +1,5 @@
+import { FiChevronRight } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 interface formProps {
@@ -17,51 +19,45 @@ export const Title = styled.h1`
   color: #fff;
 `;
 
-export const Users = styled.div`
+export const UsersContainer = styled.div`
   margin-top: 80px;
   max-width: 700px;
+`;
 
-  a {
-    background: #333333;
-    border-radius: 5px;
-    width: 100%;
-    padding: 24px;
-    display: block;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    transition: transform 0.2s;
+export const LinkContainer = styled(Link)`
+  background: #333333;
+  border-radius: 5px;
+  width: 100%;
+  padding: 24px;
+  display: block;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+  margin-bottom: 16px;
 
-    &:hover {
-      transform: scale(1.05);
-    }
-
-    & + a {
-      margin-top: 16px;
-    }
-
-    img {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-    }
-    div {
-      flex: 1;
-      margin: 0 16px;
-
-      strong {
-        font-size: 20px;
-        color: #fff;
-      }
-      p {
-        font-size: 18px;
-        color: #fff;
-        margin-top: 4px;
-      }
-    }
-    svg {
-      margin-left: auto;
-      color: #cbcbd6;
-    }
+  &:hover {
+    transform: scale(1.02);
   }
+`;
+
+export const UserDataContainer = styled.div`
+  flex: 1;
+  margin: 0 16px;
+`;
+
+export const UserName = styled.strong`
+  font-size: 20px;
+  color: #fff;
+`;
+
+export const UserAccountState = styled.p`
+  font-size: 18px;
+  color: #fff;
+  margin-top: 4px;
+`;
+
+export const ChevronIcon = styled(FiChevronRight)`
+  margin-left: auto;
+  color: #cbcbd6;
 `;

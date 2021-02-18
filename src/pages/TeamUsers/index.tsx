@@ -1,30 +1,18 @@
-/* eslint-disable no-alert */
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { FiChevronRight, FiArrowLeft } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-import { Container, Title, Users } from './styles';
-import userAvatar from '../../assets/avatar.jpg';
-import { useAuth } from '../../hooks/auth';
+
+import * as S from './styles';
 import Header from '../../components/Header';
 import Loading from '../../components/Loading';
-
-interface UserData {
-  id: string;
-  name: string;
-  isManager: boolean;
-}
+import CustomAvatar from '../../components/CustomAvatar';
+import ActivityNumber from '../../components/ActivityNumber';
+import { useData } from '../../hooks/useData';
 
 const TeamUsers: React.FC = () => {
-  const [users, setusers] = useState<UserData[] | void>();
-  const { usersInTheTeam } = useAuth();
-  useEffect(() => {
-    (async () => {
-      const myTeamUsers = await usersInTheTeam();
-      setusers(myTeamUsers);
-    })();
-  }, [usersInTheTeam]);
+  const { usersInTheTeam } = useData();
 
-  if (!users) {
+  if (!usersInTheTeam) {
     return <Loading />;
   }
 
@@ -36,21 +24,27 @@ const TeamUsers: React.FC = () => {
           Voltar
         </Link>
       </Header>
-      <Container>
-        <Title>Usuarios do seu time</Title>
-        <Users>
-          {users.map(userTeam => (
-            <Link to={`/userTask/${userTeam.id}`} key={userTeam.id}>
-              <img src={userAvatar} alt={userTeam.name} />
-              <div>
-                <strong>{userTeam.name}</strong>
-                <p>{userTeam.isManager ? 'Gestor' : 'Usuário'}</p>
-              </div>
+      <S.Container>
+        <S.Title>Usuarios do seu time</S.Title>
+        <S.UsersContainer>
+          {usersInTheTeam.map(userTeam => (
+            <S.LinkContainer
+              to={`/userTask/${userTeam.id}`}
+              key={Math.random()}
+            >
+              <CustomAvatar largeAvatar name={userTeam.name} />
+              <S.UserDataContainer>
+                <S.UserName>{userTeam.name}</S.UserName>
+                <S.UserAccountState>
+                  {userTeam.isManager ? 'Gestor' : 'Usuário'}
+                </S.UserAccountState>
+              </S.UserDataContainer>
+              <ActivityNumber userId={userTeam.id} />
               <FiChevronRight size={20} />
-            </Link>
+            </S.LinkContainer>
           ))}
-        </Users>
-      </Container>
+        </S.UsersContainer>
+      </S.Container>
     </>
   );
 };
