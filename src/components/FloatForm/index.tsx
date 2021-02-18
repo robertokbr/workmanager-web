@@ -2,96 +2,49 @@ import React, { useRef, useCallback } from 'react';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import { FiAlertCircle } from 'react-icons/fi';
+
 import { Container, FloatFormContainer } from './styles';
 import Input from '../Input';
-import api from '../../services/api';
 import Button from '../Button';
 import { useAuth } from '../../hooks/auth';
 import getFormatedData from '../../utils/getFormatedData';
-
-interface TaskData {
-  name: string;
-  date?: Date;
-  time?: Date;
-}
-
-interface TaskContent {
-  id: string;
-  name: string;
-  status: 'Cancelada' | 'Andamento' | 'Finalizada';
-  userId: string;
-  started_at: Date;
-  finished_at: Date;
-  cancellationReason: string;
-}
+import { useData } from '../../hooks/useData';
 
 interface TaskOperation {
   task?: TaskContent;
-  operation: 'addTask' | 'detailTask' | 'cancelTask' | 'finishTask';
+  operation: TaskOperations;
 }
 
 interface Props {
-  returnTask: (task: TaskContent) => void;
   taskFunction: TaskOperation;
+  onEnd(): void;
 }
 
-const FloatForm: React.FC<Props> = ({ children, returnTask, taskFunction }) => {
-  const { token, user } = useAuth();
+const FloatForm: React.FC<Props> = ({ children, taskFunction, onEnd }) => {
+  const { user } = useAuth();
+  const { createTask, updateTask } = useData();
+
   const { task } = taskFunction;
   const formRef = useRef<FormHandles>(null);
+
   const handleSubmit = useCallback(
-    async (data: TaskData) => {
-      const formatedDate = new Date(`${data.date} ${data.time}`);
-      try {
-        await api
-          .post(
-            '/task',
-            {
-              taskName: data.name,
-              started_at: formatedDate,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          )
-          .then(response => returnTask(response.data));
-      } catch (err) {
-        alert('Dados invalidos');
-      }
+    async (data: CreateTaskDTO) => {
+      await createTask(data);
+      onEnd();
     },
-    [token, returnTask],
+    [createTask, onEnd],
   );
 
   const handleUpdate = useCallback(
-    async data => {
-      const formatedDate = new Date(`${data.date} ${data.time}`);
-
-      try {
-        if (taskFunction.operation === 'cancelTask' && !data.reason) {
-          throw new Error('É necessário especificar o motivo');
-        }
-        await api
-          .put(
-            '/task',
-            {
-              task_id: task?.id,
-              finished_at: formatedDate,
-              cancellationReason: data.reason,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          )
-          .then(response => returnTask(response.data));
-      } catch (err) {
-        alert(err);
+    async (data: UpdateTaskDTO) => {
+      if (taskFunction.operation === 'cancelTask' && !data.cancellationReason) {
+        throw new Error('É necessário especificar o motivo');
       }
+
+      await updateTask(data);
+      onEnd();
     },
-    [token, returnTask, task, taskFunction.operation],
+    [onEnd, taskFunction.operation, updateTask],
   );
 
   if (task) {
@@ -113,9 +66,7 @@ const FloatForm: React.FC<Props> = ({ children, returnTask, taskFunction }) => {
             <Form ref={formRef} onSubmit={handleSubmit}>
               <Input name="date" type="Date" />
               <Input name="time" type="Time" />
-              <Button type="button" onClick={handleUpdate}>
-                Finalizar
-              </Button>
+              <Button type="submit">Finalizar</Button>
             </Form>
             {children}
           </FloatFormContainer>
@@ -166,13 +117,12 @@ const FloatForm: React.FC<Props> = ({ children, returnTask, taskFunction }) => {
               )}
             </div>
             {task.status === 'Andamento' && user.id === task.userId ? (
-              <Button type="button" onClick={handleUpdate}>
+              <Button type="button" onClick={onEnd}>
                 Finalizar
               </Button>
             ) : (
               ''
             )}
-
             {children}
           </FloatFormContainer>
         )}
@@ -185,15 +135,12 @@ const FloatForm: React.FC<Props> = ({ children, returnTask, taskFunction }) => {
       {taskFunction.operation === 'addTask' && (
         <FloatFormContainer>
           <h1>Nova tarefa</h1>
-
           <Form ref={formRef} onSubmit={handleSubmit}>
             <Input name="name" placeholder="Nome da tarefa" />
-
             <span>
               <FiAlertCircle />
               Vazio para utilizar data e hora atual
             </span>
-
             <Input name="date" type="Date" />
             <Input name="time" type="Time" />
             <Button type="submit">Adicionar</Button>

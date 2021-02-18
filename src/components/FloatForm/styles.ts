@@ -12,6 +12,7 @@ export const Container = styled(motion.div)`
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.8);
+  z-index: 10;
 `;
 
 export const FloatFormContainer = styled.div`
@@ -21,7 +22,26 @@ export const FloatFormContainer = styled.div`
   flex-direction: column;
   background: #282a36;
   color: #fff;
-  border-radius: 5px;
+  border-radius: 8px;
+  max-width: 700px;
+  max-height: 500px;
+  overflow-y: scroll;
+
+  ::-webkit-scrollbar-track {
+    border-radius: 0 15px 15px 0;
+    background-color: #282a36;
+  }
+
+  ::-webkit-scrollbar {
+    border-radius: 0 15px 15px 0;
+    width: 8px;
+    background-color: #282a36;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 15px;
+    background-color: #1c1b29;
+  }
 
   h1,
   h2 {
