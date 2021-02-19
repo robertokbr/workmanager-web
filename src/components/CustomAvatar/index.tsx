@@ -3,7 +3,6 @@ import { FiX } from 'react-icons/fi';
 
 import * as S from './styles';
 import getNameInitials from '../../utils/getNameInitials';
-import Loading from '../Loading';
 
 interface AvatarProps {
   name: string;

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   createContext,
   useCallback,
@@ -27,6 +28,7 @@ interface IDataContext {
   createTask(data: CreateTaskDTO): Promise<void>;
   updateTask(data: UpdateTaskDTO): Promise<void>;
   handleAddUsersInTheTeam(users: User[]): Promise<void>;
+  handleClearState(): void;
 }
 
 export const DataContext = createContext<IDataContext>({} as IDataContext);
@@ -80,7 +82,7 @@ export const DataProvider: React.FC = ({ children }) => {
         signOut();
       }
     })();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -94,7 +96,7 @@ export const DataProvider: React.FC = ({ children }) => {
       setUsersInTheTeam(team.members);
       await getUsersWithoutTeam();
     })();
-  }, []);
+  }, [user]);
 
   const handleAddUsersInTheTeam = useCallback(
     async (users: User[]) => {
@@ -150,6 +152,7 @@ export const DataProvider: React.FC = ({ children }) => {
   return (
     <DataContext.Provider
       value={{
+        handleClearState,
         getUsersWithoutTeam,
         updateTask,
         createTask,
